@@ -75,15 +75,22 @@ export const logout = async (req, res) => {
   }
 };
 
-export const uploadProfilePic = async (req, res) => {
-  try {
-    const { profilePic } = req.body;
-    const userId = req.user._id;
+export const updateProfile = async (req, res) => {
+  const { profilePic } = req.body;
+  //console.log(profilePic);
 
+  const userId = req.user._id;
+  // console.log(req);
+
+  try {
     if (!profilePic) {
       return res.status(400).json({ message: "profile pic is required" });
     }
+    //console.log("profilepic");
+
     const uploadResponse = await cloudinary.uploader.upload(profilePic);
+    //console.log(uploadResponse);
+
     if (!uploadResponse) {
       return res
         .status(500)
@@ -103,5 +110,16 @@ export const uploadProfilePic = async (req, res) => {
     res
       .status(500)
       .json({ message: "Internal Server Error While uploading profile pic" });
+    console.log(error);
+  }
+};
+
+export const checkAuth = async (req, res) => {
+  try {
+    res.status(200).json(req.user);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Internal Server Error While checking auth" });
   }
 };
