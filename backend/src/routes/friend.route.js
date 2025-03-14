@@ -1,0 +1,13 @@
+import express from "express";
+import {
+  addFriend,
+  acceptFriendRequest,
+} from "../controllers/friend.controller.js";
+import { protectedRoute } from "../middleware/auth.middle.js";
+
+const router = express.Router();
+
+router.post("/add", protectedRoute, addFriend);
+router.post("/accept", protectedRoute, acceptFriendRequest);
+
+export default router;

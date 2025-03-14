@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth.route.js";
 import messageRouter from "./routes/message.route.js";
+import friendRouter from "./routes/friend.route.js";
 import { connectDB } from "./lib/db.js";
 import { app, server } from "./lib/socket.js";
 
@@ -28,6 +29,7 @@ app.get("/", (req, res) => {
 });
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/message", messageRouter);
+app.use("/api/v1/friend", friendRouter);
 
 server.listen(PORT, () => {
   console.log("Server is running on port http://localhost:" + PORT);

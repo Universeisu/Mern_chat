@@ -15,6 +15,14 @@ const ChatContainer = () => {
     selectedUser,
     subscribeToMessages,
     unsubscribeFromMessages,
+    isFriend,
+    friendRequestSent,
+    friendRequestReceived,
+    setIsFriend,
+    setFriendRequestSent,
+    setFriendReqReceived,
+    addFriend,
+    acceptFriendRequest,
   } = useChatStore();
   const { authUser } = useAuthStore();
   const messageEndRef = useRef(null);
@@ -33,6 +41,36 @@ const ChatContainer = () => {
       messageEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
+  useEffect(() => {
+    if (authUser && selectedUser) {
+      setIsFriend(authUser.friends.includes(selectedUser._id));
+      setFriendReqReceived(authUser.friendRequests.includes(selectedUser._id));
+      setFriendRequestSent(authUser.friendRequests.includes(authUser._id));
+    }
+  }, [
+    setIsFriend,
+    setFriendReqReceived,
+    setFriendRequestSent,
+    authUser,
+    selectedUser,
+  ]);
+  useEffect(() => {
+    if (messageEndRef.current && messages) {
+      messageEndRef.current.scrollIntoView({
+        behavior: "smooth",
+      });
+    }
+  }, [messages]);
+  const handleAddFriend = () => {
+    addFriend(selectedUser._id);
+    setFriendRequestSent(true);
+  };
+  const handleAcceptFriend = () => {
+    acceptFriendRequest(selectedUser._id);
+    setIsFriend(true);
+    setFriendReqReceived(true);
+    getMessages(selectedUser._id);
+  };
 
   if (isMessageLoading)
     return (
@@ -85,6 +123,27 @@ const ChatContainer = () => {
           </div>
         ))}
       </div>
+      {!isFriend && !friendRequestSent && !friendRequestReceived && (
+        <div className="p-4 text-center text-red-500">
+          You must be friend with this user to send message.
+          <button className="btn btn0sm mt-2" onClick={handleAddFriend}>
+            Add Friend
+          </button>
+        </div>
+      )}
+      {!isFriend && !friendRequestSent && !friendRequestReceived && (
+        <div className="p-4 text-center text-yellow-500">
+          Friend Request Sent.Waiting for approval.
+        </div>
+      )}
+      {!isFriend && !friendRequestSent && !friendRequestReceived && (
+        <div className="p-4 text-center text-green-500">
+          This user sent you a friend request.
+          <button className="btn btn0sm mt-2" onClick={handleAcceptFriend}>
+            Add Friend
+          </button>
+        </div>
+      )}
 
       <MessageInput />
     </div>

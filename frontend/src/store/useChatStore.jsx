@@ -9,6 +9,7 @@ export const useChatStore = create((set, get) => ({
   selectedUser: null,
   isUserLoading: false,
   isMessageLoading: false,
+
   getUsers: async () => {
     set({ isUserLoading: true });
     try {
@@ -68,7 +69,41 @@ export const useChatStore = create((set, get) => ({
     const socket = useAuthStore.getState().socket;
     socket.off("newMessage");
   },
-  setSelectedUser: (selectedUser) => {
-    set({ selectedUser });
+  addFriend: async (friendId) => {
+    try {
+      const res = await api.post("/friend/add", { friendId });
+      toast.success(res.data.message);
+
+      const socket = useAuthStore.getState().socket;
+      if (socket) {
+        socket.emit("friendRequestSent", friendId);
+      }
+      set({ friendRequestSent: true });
+    } catch (error) {
+      toast.error(
+        error.response.data.message ||
+          "Something went wrong While adding Friend "
+      );
+    }
   },
+  acceptFriendRequest: async (friendId) => {
+    try {
+      const res = await api.post("/friend/accept", { friendId });
+      toast.success(res.data.message);
+
+      useAuthStore.getState().socket.emit("friendRequestAccepted", friendId);
+      set({ isFriend: true, friendRequestSent: false });
+    } catch (error) {
+      toast.error(
+        error.response.data.message ||
+          "Something went wrong While adding Friend "
+      );
+    }
+  },
+  setSelectedUser: (user) => {
+    set({ selectedUser: user });
+  },
+  setIsFriend: (isFriend) => set({ isFriend }),
+  setFriendRequestSent: (sent) => set({ friendRequestSent: sent }),
+  setFriendReqReceived: (received) => set({ friendRequestReceived: received }),
 }));
