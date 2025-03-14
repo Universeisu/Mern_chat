@@ -27,7 +27,7 @@ app.get("/", (req, res) => {
   res.send("<h1>Hello World</h1>");
 });
 app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/messages", messageRouter);
+app.use("/api/v1/message", messageRouter);
 
 server.listen(PORT, () => {
   console.log("Server is running on port http://localhost:" + PORT);
